@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load cart %}
+{% load static %}
+{% block title %}
+Shopping Cart
+{% endblock title %}
+
+{% block content %}
+
+{% if cart_info %}
+    <div class="container-xxl my-3 table-responsive text-center">
+        <table class="table table-hover table-tertiary align-middle">
+            <thead class="table-success">
+                <tr>
+                    <th scope="col">S.no</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Product Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total Price</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                {% for cart in cart_info %}
+                <tr>
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td>{{cart.pro_name}}</td>
+                    <td>
+                        <img src="{{cart.pro_image.url}}" class="img-fluid" alt="product image" width=50px>
+                    </td>
+                    <td>${{cart.pro_price}}</td>
+                    <td>{{cart|cart_quantity:request.session.cart}}</td>
+                    <td>${{cart|total_price:request.session.cart}}</td>
+                </tr>
+                {% endfor %}
+
+                <tr class="table-success border border-5 border-success-subtle">
+                    <td colspan=4>
+                        <h3 class="text-success">Payable Amount</h3>
+                    </td>
+                    <td>
+                        <h3 class="text-success">${{cart_info|payable_amt:request.session.cart}}</h3>
+                    </td>
+                        {% if request.session.customer_id %}
+                            <td>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                data-bs-target="#checkout">
+                                    Checkout
+                                </button>
+                            </td>
+                        {% else %}
+                            <td>
+                                <button type="button" class="btn btn-primary" id="liveToastBtn">Show live toast</button>
+
+                                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                                    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                        <div class="toast-header">
+                                            <img src="..." class="rounded me-2" alt="...">
+                                            <strong class="me-auto">Bootstrap</strong>
+                                            <small>11 mins ago</small>
+                                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                        </div>
+                                        <div class="toast-body">
+                                            Hello, world! This is a toast message.
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+{% else %}
+
+    <div class="container border border-3 border-success-subtle my-3 py-5 text-center">
+        <img src="{% static 'images/empty cart.webp' %}" class="img-fluid mb-3" alt="empty cart" width=200px>
+        <h5>{{error}}</h5>
+        <p>{{line}}</p>
+        {% if request.session.name %}
+            <a href="{% url 'home' %}" class="btn btn-outline-primary">Shop Now</a>
+        {% else %}
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#login">Login Now</button>
+        {% endif %}
+    </div>
+
+{% endif %}
+
+{% comment %} Modal for Checkout {% endcomment %}
+
+    <div class="modal fade" id="checkout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Checkout</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'checkout' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="formGroupExampleInput" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Enter Your Address" name="address">
+                        </div>
+                        <div class="mb-3">
+                            <label for="formGroupExampleInput2" class="form-label">Mobile</label>
+                            <input type="number" class="form-control" id="formGroupExampleInput2" placeholder="Enter Your Phone number" name="mobile">
+                        </div>
+                        <input type="submit" value="Checkout" class="btn btn-primary">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% comment %} Toast for Not-Checkout {% endcomment %}
+
+
+
+{% endblock content %}
