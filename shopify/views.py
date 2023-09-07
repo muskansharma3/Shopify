@@ -1,13 +1,21 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import *
+from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import viewsets
 from .serializers import RegistrationSerializer
+from playsound import playsound
+import os
+import threading
+from django.db.models import Q
 
 # Create your views here.
 
 
 def index(request):
+
+    category = Category.objects.all()
+    products = None
 
     if request.method == 'POST':
         product_id = request.POST.get('cartid')
@@ -31,13 +39,27 @@ def index(request):
             cart[product_id] = 1
         request.session['cart'] = cart
 
-    category = Category.objects.all()
+        referer_url = request.META.get('HTTP_REFERER', None)
+        if referer_url:
+            return redirect(referer_url)
 
-    cate = request.GET.get('category_id')
-    if cate:
-        products = Product.objects.filter(category=cate)
+    if 'q' in request.GET:
+        query = request.GET.get('q')
+        if not query.strip():  # Check if the query is empty
+            toast_with_sound(
+                request, "What are you searching for? Please enter a search query before proceeding with the search.", "error.mp3", messages.ERROR)
+        else:
+            results = Product.objects.filter(
+                Q(pro_name__icontains=query) | Q(pro_desc__icontains=query)
+            )
+            return render(request, 'index.html', {'results': results, 'query': query})
+
     else:
-        products = Product.objects.all()
+        cate = request.GET.get('category_id')
+        if cate:
+            products = Product.objects.filter(category=cate)
+        else:
+            products = Product.objects.all()
 
     context = {
         'category': category,
@@ -64,10 +86,13 @@ def sign_up(request):
             gender=gender,
         )
         reg_obj.save()
+        toast_with_sound(
+            request, f"Congratulations, {fname}! You have successfully signed up for our service. Please log in with your email and password to access your account.", "sign-up.mp3", messages.SUCCESS)
         return redirect("home")
 
 
 def login(request):
+    next = request.GET.get('next', request.path)
     if request.method == 'POST':
         email = request.POST.get('emailid')
         password = request.POST.get('password')
@@ -78,15 +103,24 @@ def login(request):
                 if check_password(password, email_id.password):
                     request.session['name'] = email_id.first_name
                     request.session['customer_id'] = email_id.id
-                    return redirect('home')
+                    toast_with_sound(
+                        request, f"Welcome back {email_id.first_name}! You have successfully logged in.", "login.mp3", messages.SUCCESS)
+                    return redirect(next)
                 else:
-                    return HttpResponse("Wrong Password!")
+                    toast_with_sound(
+                        request, "Oops, something went wrong! The email or password you entered does not match our records. Please check your spelling and try again.", "error.mp3", messages.ERROR)
+                    return redirect(next)
         except:
-            return HttpResponse("Wrong Email Address!")
+            toast_with_sound(
+                request, "Oops, something went wrong! The email or password you entered does not match our records. Please check your spelling and try again.", "error.mp3", messages.ERROR)
+            return redirect(next)
 
 
 def logout(request):
+
     request.session.clear()
+    toast_with_sound(
+        request, "You have successfully logged out. Thank you for using our service.", "login.mp3", messages.SUCCESS)
     return redirect('home')
 
 
@@ -128,6 +162,10 @@ def checkout(request):
                 )
                 ord_save.save()
             return redirect('order')
+        else:
+            toast_with_sound(
+                request, "Please log in to your account before proceeding to checkout.", "error.mp3", messages.WARNING)
+            return redirect('cart')
 
 
 def order_details(request):
@@ -144,6 +182,18 @@ def order_details(request):
     }
 
     return render(request, 'order.html', context=context)
+
+
+def toast_with_sound(request, message, sound, level=messages.INFO):
+    # Display a toast message with the specified level
+    messages.add_message(request, level, message)
+    # Get the path of the static folder
+    static_path = os.path.join(os.path.dirname(__file__), "static")
+    # Join the path of the sound file with the path of the static folder
+    sound_path = os.path.join(static_path, "audio", sound)
+    # Play a sound file
+    t = threading.Thread(target=playsound, args=(sound_path,))
+    t.start()
 
 
 # ViewSets define the view behavior.
