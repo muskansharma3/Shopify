@@ -2,8 +2,8 @@ from django.shortcuts import render, HttpResponse, redirect
 from .models import *
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
-from rest_framework import viewsets
-from .serializers import RegistrationSerializer
+# from rest_framework import viewsets
+# from .serializers import RegistrationSerializer
 from playsound import playsound
 import os
 import threading
@@ -48,6 +48,7 @@ def index(request):
         if not query.strip():  # Check if the query is empty
             toast_with_sound(
                 request, "What are you searching for? Please enter a search query before proceeding with the search.", "error.mp3", messages.ERROR)
+            return redirect('home')
         else:
             results = Product.objects.filter(
                 Q(pro_name__icontains=query) | Q(pro_desc__icontains=query)
@@ -197,6 +198,6 @@ def toast_with_sound(request, message, sound, level=messages.INFO):
 
 
 # ViewSets define the view behavior.
-class RegistrationViewSet(viewsets.ModelViewSet):
-    queryset = Registration.objects.all()
-    serializer_class = RegistrationSerializer
+# class RegistrationViewSet(viewsets.ModelViewSet):
+#     queryset = Registration.objects.all()
+#     serializer_class = RegistrationSerializer

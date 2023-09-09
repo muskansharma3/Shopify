@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-ah7-vx%swro6jlx!x2f=8&b_je#!tx%nt3u*^&abgo$#tx_d_*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "shopify",
-    'rest_framework',
+    # 'rest_framework',
 ]
 
 MIDDLEWARE = [
