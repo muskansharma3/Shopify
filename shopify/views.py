@@ -126,20 +126,21 @@ def logout(request):
 
 
 def cart_details(request):
+    cart = request.session.get('cart', {})
+    ids = list(cart.keys())
 
-    try:
-        ids = list(request.session.get('cart').keys())
+    if ids:
         cart_info = Product.objects.filter(id__in=ids)
         error = None
         line = None
-    except:
+    elif request.session.get('name'):
+        error = "Your Cart is empty!"
+        line = "Add items to your cart."
         cart_info = None
-        if request.session.get('name'):
-            error = "Your Cart is empty!"
-            line = "Add items to your cart."
-        else:
-            error = "Missing Cart items?"
-            line = "Login to see the items you added previously"
+    else:
+        error = "Missing Cart items?"
+        line = "Login to see the items you added previously"
+        cart_info = None
 
     return render(request, 'cart.html', {'cart_info': cart_info, 'error': error, 'line': line})
 
@@ -170,12 +171,13 @@ def checkout(request):
 
 
 def order_details(request):
-
     customer_id = request.session.get('customer_id')
-    ord_details = Order.objects.filter(customer=customer_id)
+
+    ord_details = Order.objects.filter(customer=customer_id, status='pending')
+
     tp = 0
-    for i in ord_details:
-        tp = tp + (i.price * i.quantity)
+    for order in ord_details:
+        tp += (order.price * order.quantity)
 
     context = {
         'order': ord_details,

@@ -2,14 +2,14 @@
 {% load cart %}
 {% load static %}
 {% block title %}
-Home
+Shopify - Home
 {% endblock title %}
 
 {% block content %}
 
 {% comment %} Container for Category {% endcomment %}
 
-<div class="container my-3 text-center justify-content-around">
+<div class="container my-2 text-center justify-content-around">
     <div class="row d-flex flex-lg-wrap">
         {% for cat in category %}
         <div class="col-2 px-5">
@@ -22,7 +22,7 @@ Home
     </div>
 </div>
 
-<div class="container mt-5">
+<div class="container mt-3">
 
     {% comment %} Search Results {% endcomment %}
     {% if query %}
@@ -112,7 +112,7 @@ Home
 
         {% comment %} Container for Product {% endcomment %}
 
-        <div class="container mt-5">
+        <div class="container mt-3">
             <div class="row">
                 {% for pro in products %}
                 <div class="col-lg-3 col-md-4 col-sm-6 col-12 mt-3">

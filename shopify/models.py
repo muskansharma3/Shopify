@@ -44,5 +44,13 @@ class Order(models.Model):
     customer = models.ForeignKey(Registration, on_delete=models.CASCADE)
     status = models.BooleanField(default=False)
 
-    def __str__(self):                   # dunder method or magic method
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+    )
+
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    def __str__(self):     # dunder method or magic method
         return self.product.pro_name

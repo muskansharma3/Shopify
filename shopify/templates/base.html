@@ -1,21 +1,32 @@
 <!doctype html>
-{% load static %}
-<html lang="en">
+{% load static %}    {% comment %} Loading Static Files {% endcomment %}
 
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>
     {% block title %}{% endblock title %}
   </title>
+
+  {% comment %} CDN Link of Bootstrap {% endcomment %}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+  {% comment %} CDN Link of Bootstrap Icon {% endcomment %}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  {% comment %} Link of Custom Style CSS file {% endcomment %}
   <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+  {% comment %} Favicon Link  {% endcomment %}
   <link rel="shortcut icon" href="{% static 'images/logo.png' %}">
 </head>
 
 <body>
+
+  {% comment %} Navigation Bar Code starts {% endcomment %}
   <div class="container-fluid px-0 sticky-top">
     <header class="p-2 text-bg-dark">
       <div class="container">
@@ -97,6 +108,7 @@
       </div>
     </header>
   </div>
+  {% comment %} Navigation Bar Code ends {% endcomment %}
 
   {% block content %}{% endblock content %}
 
@@ -232,6 +244,8 @@
     </div>
   </div>
 
+  {% comment %} Footer Code starts {% endcomment %}
+
   <footer class="py-5 my-4">
     <ul class="nav justify-content-center border-bottom pb-3 mb-3 fs-4">
       <li class="nav-item"><a href="{% url 'home' %}" class="nav-link px-3 text-body-secondary">Home</a></li>
@@ -243,12 +257,17 @@
     <p class="text-center text-body-secondary">Copyright © 2023 Shopify. All Rights Reserved.</p>
   </footer>
 
+  {% comment %} Footer Code ends {% endcomment %}
 
+  {% comment %} CDN Link of Bootstrap Script {% endcomment %}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>
+
+  {% comment %} Jquery Code Link {% endcomment %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+  {% comment %} Custom Script {% endcomment %}
     <script>
       var toastEl = document.querySelector('.toast');
       var toast = new bootstrap.Toast(toastEl);
@@ -260,5 +279,4 @@
     </script>
 
 </body>
-
 </html>
